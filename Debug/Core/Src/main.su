@@ -1,5 +1,10 @@
-../Core/Src/main.c:66:5:main	8	static
-../Core/Src/main.c:123:6:SystemClock_Config	88	static
-../Core/Src/main.c:165:13:MX_TIM10_Init	8	static
-../Core/Src/main.c:196:13:MX_GPIO_Init	40	static
-../Core/Src/main.c:238:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:71:5:main	8	static
+../Core/Src/main.c:148:6:SystemClock_Config	88	static
+../Core/Src/main.c:190:13:MX_TIM10_Init	8	static
+../Core/Src/main.c:221:13:MX_GPIO_Init	40	static
+../Core/Src/main.c:257:6:Process_Scheduler	8	static
+../Core/Src/main.c:305:6:Process_1	8	static
+../Core/Src/main.c:325:6:Process_2	8	static
+../Core/Src/main.c:336:6:Process_3	8	static
+../Core/Src/main.c:348:6:Os_Delay	16	static
+../Core/Src/main.c:362:6:Error_Handler	4	static,ignoring_inline_asm

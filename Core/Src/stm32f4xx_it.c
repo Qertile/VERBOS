@@ -41,7 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern uint32_t current_time_ms;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -183,16 +183,10 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-    static uint16_t count;
-    count++;
-    printf("SysTick Handler Count = %d\n", count);
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);    // LED3 PD13
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);    // LED4 PD12
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);    // LED5 PD14
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);    // LED6 PD15
-
-
-
+    
+    current_time_ms++;
+    Process_Scheduler();
+    printf("current time ms = %d\n", current_time_ms);
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */

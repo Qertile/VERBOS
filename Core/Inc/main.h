@@ -38,6 +38,23 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+/* ----- process scheduler sturcture ----- */
+typedef struct{
+    uint8_t pid;        // Process ID
+    uint8_t preempt_pid;   // Process priority
+
+    uint8_t next_pid;   // last executed process id
+    uint8_t cur_pid;    // current executing process id
+    uint8_t last_pid;   // last executed process id
+} Scheduler_t;
+Scheduler_t scheduler;
+
+typedef struct{
+    uint8_t pid;        // Process ID
+    uint8_t preempt_pid;   // Process priority
+} process_t;
+process_t p1, p2, p3; // create 3 processes for testing
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -48,13 +65,19 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 
+#define PROCESS_EXE_TIME 1000 // 1 tick is 1 kHz
+#define MAX_PROCESS_NUM  4
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void Process_Scheduler(void);
+void Process_1(void);
+void Process_2(void);
+void Process_3(void);
+void Os_Delay(uint16_t ms);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -71,6 +94,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 
+uint32_t current_time_ms;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

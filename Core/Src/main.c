@@ -44,6 +44,11 @@ TIM_HandleTypeDef htim10;
 
 /* USER CODE BEGIN PV */
 
+uint32_t current_tick = 0;
+uint32_t last_tick = 0;
+uint8_t  current_process = 0;
+uint8_t  last_process = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,6 +96,17 @@ int main(void)
   MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
 
+    scheduler.pid = 0;
+    scheduler.next_pid = 0;
+    scheduler.cur_pid = 0;
+    scheduler.last_pid = 0;
+    scheduler.preempt_pid = 0;
+
+    p1.pid = 1;
+    p2.pid = 2;
+    p3.pid = 3;
+
+    current_time_ms = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -99,19 +115,28 @@ int main(void)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-    
-    HAL_Delay(1000);
-    printf("main\n");
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);    // LED3 PD13
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);    // LED4 PD12
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);    // LED5 PD14
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);    // LED6 PD15
+        /* ----- Process Switching ----- */
+    switch (scheduler.next_pid){
+        case 0:
+            Process_Scheduler();
+            break;
 
-    // HAL_Delay(1000);
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);    // LED4 PD12
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);    // LED3 PD13
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);    // LED5 PD14
-    // HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);    // LED6 PD15
+        case 1:
+            Process_1();
+            break;
+
+        case 2:
+            Process_2();
+            break;
+
+        case 3:
+            Process_3();
+            break;
+
+        default:
+            Process_Scheduler();
+            break;
+    }
   }
   /* USER CODE END 3 */
 }
@@ -226,9 +251,108 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-// void SysTick_Handler(void){
-//     printf("SysTick Handler\n");
-// }
+
+
+/* Process Control Block (PCB) */
+void Process_Scheduler (void){
+	// PCB should NOT be a while loop, it should switch the next process and leave ASAP
+
+    	/* use any HAL_Delay function will cause SW hangs */
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+        
+        if (scheduler.preempt_pid!=0){
+            scheduler.next_pid = scheduler.preempt_pid;
+            scheduler.preempt_pid = 0;
+
+            printf("current process = %d\n", scheduler.next_pid);
+            return;
+        }
+
+        if (current_time_ms % PROCESS_EXE_TIME == 0){
+            scheduler.last_pid = scheduler.cur_pid;                     // record last process
+            scheduler.next_pid = scheduler.cur_pid+1;                   // move to next process
+            scheduler.cur_pid++;                                  // move to next process
+
+
+
+
+            // set maximum number of processes
+            if (scheduler.next_pid >= MAX_PROCESS_NUM){
+                scheduler.cur_pid = 0;
+                scheduler.next_pid = 0;
+            }
+            printf("current process = %d\n", scheduler.next_pid);
+        }
+
+        // need a list of all process, for length
+
+        // preemtive round robin, interrupt, next = this process, others are the same
+
+        // do I really need priority list???
+        // when interrupt, raise a flag in irq handler(Pend SV?), provide PID for request (regist in a struct), leave handler
+        // if (flag), process 0 modify its priority (base on urgency level), and clear the flag
+        // reset its prority after execution
+
+}
+
+void Process_1(void){
+    while(1){
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);    // LED3 PD13
+        Os_Delay(100);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  // LED3 PD13
+        Os_Delay(100);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);    // LED3 PD13
+        Os_Delay(100);
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  // LED3 PD13
+
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);  // LED4 PD12
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);  // LED5 PD14
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);  // LED6 PD15
+
+        // usually done by PCB/TCB
+        /* check if next process is this process*/
+        if (scheduler.next_pid != p1.pid) break;
+    }
+}
+
+void Process_2(void){
+    while(1){
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);   // LED3 PD13
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);     // LED4 PD12
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);   // LED5 PD14
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);   // LED6 PD15
+
+        /* check if next process is this process*/
+        if (scheduler.next_pid != p2.pid) break;
+    }
+}
+void Process_3(void){
+    while(1){
+        
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  // LED3 PD13
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);  // LED4 PD12
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);    // LED5 PD14
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);    // LED6 PD15
+        /* check if next process is this process*/
+        if (scheduler.next_pid != p3.pid) break;
+    }
+}
+
+void Os_Delay(uint16_t ms){
+    static uint16_t start_time;
+    start_time = current_time_ms;
+    while(current_time_ms - start_time < ms){;}
+
+    return;
+}
+
 /* USER CODE END 4 */
 
 /**
