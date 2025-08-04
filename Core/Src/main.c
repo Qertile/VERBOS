@@ -304,17 +304,22 @@ void Process_Scheduler (void){
 
 void Process_1(void){
     while(1){
+        /* --- p1 indicator --- */
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);    // LED3 PD13
-        Os_Delay(100);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  // LED3 PD13
-        Os_Delay(100);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);    // LED3 PD13
-        Os_Delay(100);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  // LED3 PD13
-
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);  // LED4 PD12
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);  // LED5 PD14
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);  // LED6 PD15
+        printf(" --- Process 1 --- \r\n");
+
+        /* --- main process --- */
+        uint8_t p1_var=0;
+
+        for (size_t i = 0; i < 0x100; i++){
+            printf("p1_var = %u\r\n", p1_var);
+            p1_var++;
+            Os_Delay(100);
+        }
+        
 
         // usually done by PCB/TCB
         /* check if next process is this process*/
@@ -324,10 +329,21 @@ void Process_1(void){
 
 void Process_2(void){
     while(1){
+        /* --- p2 indicator --- */
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);   // LED3 PD13
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);     // LED4 PD12
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);   // LED5 PD14
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);   // LED6 PD15
+        printf(" --- Process 2 --- \r\n");
+
+        /* --- main process --- */
+        uint16_t p2_var=0x100;
+
+        for (size_t i = 0; i < 0x100; i++){
+            printf("p2_var = %u\r\n", p2_var);
+            p2_var++;
+            Os_Delay(100);
+        }
 
         /* check if next process is this process*/
         if (scheduler.next_pid != p2.pid) break;
@@ -335,20 +351,32 @@ void Process_2(void){
 }
 void Process_3(void){
     while(1){
-        
+        /* --- p3 indicator --- */        
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  // LED3 PD13
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);  // LED4 PD12
         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);    // LED5 PD14
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);    // LED6 PD15
+        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);    // LED6 PD15
+        printf(" --- Process 2 --- \r\n");
+
+        /* --- main process --- */
+        uint32_t p3_var=0x10000;
+
+        for (size_t i = 0; i < 0x100; i++){
+            printf("p3_var = %u\r\n", p3_var);
+            p3_var++;
+            Os_Delay(100);
+        }
+
+
         /* check if next process is this process*/
         if (scheduler.next_pid != p3.pid) break;
     }
 }
 
-void Os_Delay(uint16_t ms){
-    static uint16_t start_time;
+void Os_Delay(uint32_t ms){
+    static uint32_t start_time;
     start_time = current_time_ms;
-    while(current_time_ms - start_time < ms){;}
+    while((current_time_ms - start_time) < ms){;}
 
     return;
 }

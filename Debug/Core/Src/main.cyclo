@@ -3,8 +3,8 @@
 ../Core/Src/main.c:190:13:MX_TIM10_Init	2
 ../Core/Src/main.c:221:13:MX_GPIO_Init	1
 ../Core/Src/main.c:257:6:Process_Scheduler	4
-../Core/Src/main.c:305:6:Process_1	2
-../Core/Src/main.c:325:6:Process_2	2
-../Core/Src/main.c:336:6:Process_3	2
-../Core/Src/main.c:348:6:Os_Delay	2
-../Core/Src/main.c:362:6:Error_Handler	1
+../Core/Src/main.c:305:6:Process_1	3
+../Core/Src/main.c:330:6:Process_2	3
+../Core/Src/main.c:352:6:Process_3	3
+../Core/Src/main.c:376:6:Os_Delay	2
+../Core/Src/main.c:390:6:Error_Handler	1

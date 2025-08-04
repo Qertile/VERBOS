@@ -3,8 +3,8 @@
 ../Core/Src/main.c:190:13:MX_TIM10_Init	8	static
 ../Core/Src/main.c:221:13:MX_GPIO_Init	40	static
 ../Core/Src/main.c:257:6:Process_Scheduler	8	static
-../Core/Src/main.c:305:6:Process_1	8	static
-../Core/Src/main.c:325:6:Process_2	8	static
-../Core/Src/main.c:336:6:Process_3	8	static
-../Core/Src/main.c:348:6:Os_Delay	16	static
-../Core/Src/main.c:362:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:305:6:Process_1	16	static
+../Core/Src/main.c:330:6:Process_2	16	static
+../Core/Src/main.c:352:6:Process_3	16	static
+../Core/Src/main.c:376:6:Os_Delay	16	static
+../Core/Src/main.c:390:6:Error_Handler	4	static,ignoring_inline_asm

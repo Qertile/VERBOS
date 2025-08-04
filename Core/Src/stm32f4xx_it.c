@@ -186,7 +186,7 @@ void SysTick_Handler(void)
     
     current_time_ms++;
     Process_Scheduler();
-    printf("current time ms = %d\n", current_time_ms);
+    // printf("current time ms = %d\n", current_time_ms);
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */

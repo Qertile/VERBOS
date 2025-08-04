@@ -77,7 +77,7 @@ void Process_Scheduler(void);
 void Process_1(void);
 void Process_2(void);
 void Process_3(void);
-void Os_Delay(uint16_t ms);
+void Os_Delay(uint32_t ms);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
